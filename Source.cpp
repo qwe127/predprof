@@ -3,20 +3,19 @@
 void perest(int** m, int d)
 {
 	m[0][d]++;
-	if (m[0][d] > d * 2)
+	int i{ d };
+	while (m[0][i] > i << 1 && i > 0)
+		m[0][--i]++;				// заполнение 1 строчки
+	while (i < d)
 	{
-		int i{ d };
-		while (m[0][i] > i * 2 && i > 0)
-			m[0][--i]++;
-		while (i < d)
-		{
-			m[0][i + 1] = m[0][i] + 1;
-			i++;
-		}
+		m[0][i + 1] = m[0][i] + 1;
+		i++;
 	}
 	for (int i{ 0 }; i <= d; i++)
 		m[1][i] = 0;
-	for (int k{ 1 }, i{ 1 }; k <= d * 2 + 1; k++)
+	d <<= 1;
+	d++;
+	for (int k{ 1 }, i{ 1 }; k <= d; k++)	// заполнение 2 строчки
 	{
 		if (m[0][i] == k)
 			i++;
@@ -64,14 +63,16 @@ void vivod(int** m, int d, char* masc)
 			break;
 		}
 	}
-	for (int i{ 0 }; i < d * 2; i++)
+	d <<= 1;
+	for (int i{ 0 }; i < d; i++)
 		std::cout << masc[i];
 	std::cout << " ";
 }
 
 int main()
 {
-	int N, M, max{ 1 };
+	int N, M;
+	unsigned long long int max{ 1 };
 	std::cin >> N >> M;
 	if (N % 2 != 0)
 	{
@@ -79,33 +80,33 @@ int main()
 		return 0;
 	}
 
-	for (int i{ 0 }; i < N / 2; i++)
+	for (int i{ 0 }; i < N >> 1; i++)
 	{
-		max *= M;
+		max *= M;	//M в степени N/2 - кол-во вариантов кмпановки по виду
 	}
 	int **mas = new int*[3];
 	for (int i{ 0 }; i < 3; i++)
 	{
-		mas[i] = new int[N / 2];
+		mas[i] = new int[N >> 1];
 	}
-	for (int i{ 0 }; i < N / 2; i++)
+	for (int i{ 0 }; i < N >> 1; i++)
 	{
-		mas[0][i] = i;
-		mas[1][i] = N - 1 - i;
-		mas[2][i] = 0;
+		mas[0][i] = i;				//номера элементов, где находятся открывающие скобки
+		mas[1][i] = N - 1 - i;		//номера элементов, где находятся закрывающие скобки
+		mas[2][i] = 0;				//вид скобки
 	}
-	char* masc = new char[N / 2];
+	char* masc = new char[N];
 
 	for (; mas[0][0] != 1;)
 	{
-		for (int j{ 0 }; j < max; j++)
+		for (unsigned long long j{ 0 }; j < max; j++)
 		{
-			vivod(mas, N / 2, masc);
-			plus(mas[2], M, N / 2 - 1);
+			vivod(mas, N >> 1, masc);
+			plus(mas[2], M, (N >> 1) - 1);
 		}
-		for (int j{ 0 }; j < N / 2; j++)
+		for (int j{ 0 }; j < N >> 1; j++)
 			mas[2][j] = 0;
-		perest(mas, N / 2 - 1);
+		perest(mas, (N >> 1) - 1);
 	}
 	std::cin >> N;
 	return 0;
